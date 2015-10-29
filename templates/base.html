@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block head %}
+    <title>{{ title }}</title>
+
+    {% endblock %}
+</head>
+<body>
+
+<div class="wrapper">
+    <div id="header">
+        <div class="header-wrap">
+        {% include 'header.html' %}
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="wrap">
+            <div class="content-wrapper">
+    {% block main_content %}
+
+    {% endblock %}
+            </div>
+        </div>
+        <div class="push"></div>
+    </div>
+
+
+</div>
+<div id="footer">
+            <div class="wrap">
+        {% include 'footer.html' %}
+            </div>
+    </div>
+
+</body>
+</html>
+{% endautoescape %}
