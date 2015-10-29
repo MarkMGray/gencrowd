@@ -1,8 +1,8 @@
-application: connexusproj
+application: gencrowd
 version: 1
 runtime: python27
 api_version: 1
-threadsafe: true
+threadsafe: yes
 
 libraries:
 - name: webapp2
