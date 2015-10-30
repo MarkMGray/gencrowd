@@ -3,6 +3,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
     {% block head %}
     <title>{{ title }}</title>
 
@@ -10,31 +15,24 @@
 </head>
 <body>
 
-<div class="wrapper">
-    <div id="header">
-        <div class="header-wrap">
+<div id="wrap">
+    <div class="container">
         {% include 'templates/header.html' %}
-        </div>
+
+        {% block main_content %}
+
+        {% endblock %}
+
     </div>
-
-    <div id="main">
-        <div class="wrap">
-            <div class="content-wrapper">
-    {% block main_content %}
-
-    {% endblock %}
-            </div>
-        </div>
-        <div class="push"></div>
-    </div>
-
-
+    <div id="push"></div>
 </div>
-<div id="footer">
-            <div class="wrap">
+<div id="footer" class="footer">
+    <div class="container">
         {% include 'templates/footer.html' %}
-            </div>
     </div>
+</div>
+
+<script src="js/bootstrap.min.js"></script>
 
 </body>
 </html>
