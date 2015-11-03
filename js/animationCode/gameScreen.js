@@ -27,12 +27,12 @@ window.GameDisplay = function(parentElement) {
 			console.log(event)
 			var ww = display.getColW();
 			var hh = display.getRowH();
-			var x = Math.max(0, event.layerX - ww / 2) / (ww + 0);
-			var y = Math.max(0, event.layerY - hh / 2) / (hh + 0);
+			var x = Math.max(0, event.layerX - ww / 2) / (ww/2 + 0);
+			var y = Math.max(0, event.layerY - hh / 2) / (hh/2 + 0);
 			var cell = display.getCell(Math.floor(x), Math.floor(y));
 			cell.beClicked(display.ctx, ww, hh);
 			console.log(x + "	" + y)
-			console.log(cell)
+			console.log(event)
 
 			display.citizen.evaluation.clicks.push((new Date()).getTime())
 		}
@@ -87,10 +87,15 @@ GameDisplay.prototype.getCell = function(x, y) {
 GameDisplay.prototype.redraw = function() {
 	if (!this.parent) return;
 	var q = this.canvas, c = this.ctx;
-	var w = q.width = this.parent.offsetWidth * this.pixelMult;
-	var h = q.height = this.parent.offsetHeight * this.pixelMult;
-	q.style.width = this.parent.offsetWidth + 'px';
-	q.style.height = this.parent.offsetHeight + 'px';
+	q.width = this.parent.offsetWidth * this.pixelMult;
+	q.height = this.parent.offsetHeight * this.pixelMult;
+	if (!this.setSize) {
+
+		q.style.width = this.parent.offsetWidth + 'px';
+		q.style.height =  '20em';
+		this.setSize = true;
+	}
+
 	var ww = this.getColW();
 	var hh = this.getRowH();
 	for (var i = 0; i < this.cells.length; i++) {
