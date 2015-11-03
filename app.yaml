@@ -12,6 +12,9 @@ libraries:
 
 handlers:
 
+- url: /imgs
+  static_dir: imgs
+
 - url: /js
   static_dir: js
 

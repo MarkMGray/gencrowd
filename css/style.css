@@ -16,6 +16,27 @@ html, body{
     height: 100%;
 }
 
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 75px;
+}
+
+#overlay {
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    background: #000;
+    opacity: 0.8;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+}
+
 #wrap {
     min-height: 100%;
     height: auto !important;

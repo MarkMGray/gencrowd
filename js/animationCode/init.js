@@ -45,8 +45,12 @@ el("submitButt").onclick = function() {
 
 	console.log(DISPLAY.citizen.getSaveData()) // send this to server
 	var postObj = DISPLAY.citizen.getSaveData();
+	$("#overlay").show();
 	$.post("/api/save", $.param(postObj), function (data) {
 		console.log(data);
+
+		toastr.success("Successfully saved response!");
+		$("#overlay").delay(500).hide(0);
 	});
 
 }
