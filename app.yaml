@@ -24,5 +24,8 @@ handlers:
 - url: /eval.*
   script: handlers.evaluate.app
 
+- url: /api.*
+  script: handlers.api.app
+
 - url: /.*
   script: handlers.main.app

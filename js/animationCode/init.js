@@ -22,13 +22,32 @@ console.log(DISPLAY)
 DISPLAY.redraw()
 
 el("finishButt").onclick = function() {
-	el("surveyDiv").style.display = "block"
+	$("#submitDiv").slideDown(500);
+	$("#finishButt").slideUp();
+
 }
 
+var selectedValue = 1;
+
+$(".btn-group > button.btn").on("click", function () {
+	var num = +this.innerHTML;
+	selectedValue = num;
+	console.log("Selected Value: " + selectedValue);
+});
+
 el("submitButt").onclick = function() {
-	DISPLAY.citizen.evaluation.surveyScore = getCheckedValue("survey");
+	DISPLAY.citizen.evaluation.surveyScore = selectedValue;
 	DISPLAY.citizen.evaluation.endMs = (new Date()).getTime();
-	if (DISPLAY.citizen.evaluation.surveyScore) el("surveyDiv").style.display = "none"
+	if (DISPLAY.citizen.evaluation.surveyScore) {
+		$("#submitDiv").slideUp(500);
+		$("#finishButt").slideDown();
+	}
+
 
 	console.log(DISPLAY.citizen.getSaveData()) // send this to server
+	var postObj = DISPLAY.citizen.getSaveData();
+	$.post("/api/save", $.param(postObj), function (data) {
+		console.log(data);
+	});
+
 }

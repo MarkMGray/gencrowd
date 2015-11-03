@@ -8,7 +8,19 @@
 
 {% block main_content %}
 
-<h1> Please evaluate our agents!!</h1>
+<p>Current Generation: {{ generation }}</p>
+<div>
+	<button id="finishButt" class="btn btn-default">Finish</button>
+</div>
+<div id="submitDiv" style="display: none">
+	How did you enjoy your experience with this particular toy?
+	<div class="btn-group">
+		<button class="btn btn-default">1</button>
+		<button class="btn btn-default">2</button>
+		<button class="btn btn-default">3</button>
+	</div>
+	<button id="submitButt" class="btn btn-primary">Submit</button>
+</div>
 <div id="playDiv">
 </div>
 
