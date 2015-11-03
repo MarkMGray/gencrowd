@@ -32,7 +32,6 @@ var selectedValue = 1;
 $(".btn-group > button.btn").on("click", function () {
 	var num = +this.innerHTML;
 	selectedValue = num;
-	console.log("Selected Value: " + selectedValue);
 });
 
 el("submitButt").onclick = function() {

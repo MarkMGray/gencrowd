@@ -45,11 +45,27 @@ Citizen.prototype.mate = function(partner, evo) {
 
 Citizen.prototype.getSaveData = function() {
 	var saveData = {};
-	saveData.evaluation = this.evaluation;
+
+	saveData.evaluation = {};
+
+	saveData.evaluation.clicks = this.evaluation.clicks;
+	saveData.evaluation.endMs = this.evaluation.endMs;
+	saveData.evaluation.startMs = this.evaluation.startMs;
+	saveData.evaluation.surveyScore = this.evaluation.surveyScore;
+
 	saveData.numrows = this.display.numrows;
 	saveData.numcols = this.display.numcols;
 	saveData.classPool = this.display.cells[0].classPool;
-	saveData.fourPointClasser = this.fourPointClasser;
+
+	saveData.fourPointClasser = {};
+
+	saveData.fourPointClasser.classes = this.fourPointClasser.classes;
+	saveData.fourPointClasser.e = this.fourPointClasser.e;
+	saveData.fourPointClasser.n = this.fourPointClasser.n;
+	saveData.fourPointClasser.s = this.fourPointClasser.s;
+	saveData.fourPointClasser.w = this.fourPointClasser.w;
+
+
 	saveData.cellData = [];
 	for (var i = 0; i < this.display.cells.length; i++) {
 		var c = this.display.cells[i];
