@@ -9,7 +9,6 @@
     <link href="css/style.css" rel="stylesheet">
 
     {% block head %}
-    <title>{{ title }}</title>
 
     {% endblock %}
 </head>
@@ -17,7 +16,7 @@
 
 <div id="wrap">
     <div class="container">
-        {% include 'templates/header.html' %}
+        {% include 'header.html' %}
 
         {% block main_content %}
 
@@ -28,11 +27,15 @@
 </div>
 <div id="footer" class="footer">
     <div class="container">
-        {% include 'templates/footer.html' %}
+        {% include 'footer.html' %}
     </div>
 </div>
 
+{% block scripts %}
+
 <script src="js/bootstrap.min.js"></script>
+
+{% endblock %}
 
 </body>
 </html>

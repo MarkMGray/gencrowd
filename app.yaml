@@ -21,7 +21,8 @@ handlers:
 - url: /css
   static_dir: css
 
-
+- url: /eval.*
+  script: handlers.evaluate.app
 
 - url: /.*
-  script: main.app
+  script: handlers.main.app

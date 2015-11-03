@@ -4,6 +4,10 @@
     text-align: center;
 }
 
+#playDiv {
+    height: 80%;
+}
+
 #push {
     height: 60px;
 }
