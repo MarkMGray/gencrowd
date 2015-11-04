@@ -8,12 +8,25 @@ class Citizen(ndb.Model):
     state = ndb.IntegerProperty()
     citizenID = ndb.IntegerProperty()
     generationID = ndb.IntegerProperty()
-    evaluation = ndb.LocalStructuredProperty(Evaluation.Evaluation)
     numCols = ndb.IntegerProperty()
     numRows = ndb.IntegerProperty()
-    fourPointClasses = ndb.StructuredProperty(FourPointClassifier)
-    cellData = ndb.StructuredProperty(Cell, repeated=True)
-    classPool = ndb.StructuredProperty(Perceptron, repeated=True)
+    evaluation = ndb.LocalStructuredProperty(Evaluation.Evaluation)
+    fourPointClasses = ndb.LocalStructuredProperty(FourPointClassifier)
+    cellData = ndb.LocalStructuredProperty(Cell, repeated=True)
+    classPool = ndb.LocalStructuredProperty(Perceptron, repeated=True)
+
+    def classPoolList(self):
+        classPool = []
+        for perceptron in self.classPool:
+            cellDef = perceptron.pool
+            classPool.append(cellDef)
+        return classPool
+
+    def cellDataList(self):
+        cells = []
+        for cell in self.cellData:
+            cells.append(cell.toDict())
+        return cells
 
     @classmethod
     def get_all_citizens(cls):

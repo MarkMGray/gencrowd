@@ -2,6 +2,7 @@ import json
 import cgi
 import webapp2
 from models import Citizen
+from models import CitizenHelper
 from models import Evaluation
 
 class SaveCitizen(webapp2.RequestHandler):
@@ -36,19 +37,55 @@ class SaveCitizen(webapp2.RequestHandler):
             response_obj["error_msg"] = "No evaluation given"
             self.response.write(json.dumps(response_obj))
             return
-        citizen = Citizen.Citizen()
         evaluationObj = Evaluation.Evaluation()
         evaluationObj.startTime = evaluationDict["startMs"]
         evaluationObj.startTime = evaluationDict["startMs"]
         evaluationObj.endTime = evaluationDict["endMs"]
         evaluationObj.evaluationScore = evaluationDict["surveyScore"]
         evaluationObj.clicks = evaluationDict["clicks"]
+        # TODO : Change the state of the citizen to 2 (evaluated)
         citizen.evaluation = evaluationObj
         citizen.put()
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
         self.response.write(json.dumps(response_obj))
         return
+        # citizen = Citizen.Citizen()
+        # citizen.state = 0
+        # citizen.generationID = 1
+        # citizen.citizenID = 10
+        # citizen.numRows = data["numrows"]
+        # citizen.numCols = data["numcols"]
+        # citizen.evaluation = None
+        # fourPointDict = data["fourPointClasser"]
+        # citizen.fourPointClasses = CitizenHelper.FourPointClassifier()
+        # citizen.fourPointClasses.regionClasses = fourPointDict["classes"]
+        # citizen.fourPointClasses.north = fourPointDict["n"]
+        # citizen.fourPointClasses.south = fourPointDict["s"]
+        # citizen.fourPointClasses.east = fourPointDict["e"]
+        # citizen.fourPointClasses.west = fourPointDict["w"]
+        # classPoolObj = data["classPool"]
+        # citizen.classPool = []
+        # for cP in classPoolObj:
+        #     cPObj = CitizenHelper.Perceptron()
+        #     cPObj.pool = cP
+        #     citizen.classPool.append(cPObj)
+        # cells = data["cellData"]
+        # citizen.cellData = []
+        # for cellD in cells:
+        #     cell = CitizenHelper.Cell()
+        #     cell.bias = cellD["bias"]
+        #     cell.x = cellD["x"]
+        #     cell.y = cellD["y"]
+        #     cell.wrap = cellD["wrap"]
+        #     cell.origActivation = cellD["origActivation"]
+        #     cell.classPoolIndex = cellD["classPoolIndex"]
+        #     citizen.cellData.append(cell)
+        # citizen.put()
+        # response_obj["response_code"] = 0
+        # response_obj["message"] = "Saved Citizen Successfully"
+        # self.response.write(json.dumps(response_obj))
+        # return
 
 class FetchCitizen(webapp2.RequestHandler):
     def post(self):
@@ -64,20 +101,19 @@ class FetchCitizen(webapp2.RequestHandler):
         if toSendCitizen is None:
             response_obj["citizen"] = "null"
         else:
+            # TODO : Change the state of the citizen to 1 (locked)
+            citizen = {}
+            citizen["state"] = toSendCitizen.state
+            citizen["citizenID"] = toSendCitizen.citizenID
+            citizen["generationID"] = toSendCitizen.generationID
+            citizen["numrows"] = toSendCitizen.numRows
+            citizen["numcols"] = toSendCitizen.numCols
+            citizen["evaluation"] = None
+            citizen["fourPointClasser"] = toSendCitizen.fourPointClasses.toDict()
+            citizen["classPool"] = toSendCitizen.classPoolList()
+            citizen["cellData"] = toSendCitizen.cellDataList()
             response_obj["citizen"] = citizen
         self.response.write(json.dumps(response_obj))
         return
-        # cit = Citizen()
-        # citizens = Citizen.Citizen.get_all_citizens()
-        # citizen = None
-        # if citizens:
-        #     citizen = citizens[0]
-        # response_obj = {}
-        # response_obj["response_code"] = 1
-        # if citizen:
-        #     response_obj["citizen"] = citizen
-        # else:
-        #     response_obj["citizen"] = "null"
-        # return self.response.write(json.dumps(response_obj))
 
 app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen)], debug=True)
