@@ -1,37 +1,26 @@
 from google.appengine.ext import ndb
-import models
-
-class Perceptron(ndb.Model):
-    pool = ndb.IntegerProperty(repeated=True)
-
-class Cell(ndb.Model):
-    bias = ndb.FloatProperty()
-    classPoolIndex = ndb.IntegerProperty()
-    origActivation = ndb.IntegerProperty()
-    wrap = ndb.BooleanProperty()
-    x = ndb.IntegerProperty()
-    y = ndb.IntegerProperty()
-
-class FourPointClassifier(ndb.Model):
-    regionClasses = ndb.IntegerProperty(repeated=True)
-    north = ndb.FloatProperty()
-    south = ndb.FloatProperty()
-    east = ndb.FloatProperty()
-    west = ndb.FloatProperty()
+import Evaluation
+from CitizenHelper import FourPointClassifier
+from CitizenHelper import Cell
+from CitizenHelper import Perceptron
 
 class Citizen(ndb.Model):
+    state = ndb.IntegerProperty()
     citizenID = ndb.IntegerProperty()
     generationID = ndb.IntegerProperty()
-    evaluation = ndb.StructuredProperty(models.Evaluation)
+    evaluation = ndb.LocalStructuredProperty(Evaluation)
     numCols = ndb.IntegerProperty()
     numRows = ndb.IntegerProperty()
     fourPointClasses = ndb.StructuredProperty(FourPointClassifier)
-    classPool = ndb.StructuredProperty(Perceptron, repeated=True)
     cellData = ndb.StructuredProperty(Cell, repeated=True)
+    classPool = ndb.StructuredProperty(Perceptron, repeated=True)
 
     @classmethod
     def get_all_citizens(cls):
-        return cls.query().fetch()
+        data = cls.query().fetch()
+        if not data:
+            return None
+        return data
 
     @classmethod
     def get_citizen(cls, genID, citizenID):
@@ -39,14 +28,32 @@ class Citizen(ndb.Model):
         if not data:
             return None
         citizen = data[0]
+        if not citizen:
+            return None
         return citizen
 
     @classmethod
     def get_eval_of_citizen(cls, genID, citizenID):
-        data = cls.query(ndb.AND(Citizen.generationID == genID, Citizen.citizenID == citizenID)).fetch()
-        if not data:
+        citizen = Citizen.get_citizen(genID, citizenID)
+        if not citizen:
             return None
-        citizen = data[0]
         if not citizen.evaluation:
             return None
         return citizen.evaluation
+
+    @classmethod
+    def get_all_citizens_by_generation(cls, genID):
+        citizens = cls.query(Citizen.generationID == genID).fetch()
+        if not citizens:
+            return None
+        return citizens
+
+    @classmethod
+    def get_latest_generation_citizens(cls):
+        all_citizens = Citizen.get_all_citizens()
+        generationID = -1
+        for cit in all_citizens:
+            if cit.generationID > generationID:
+                generationID = cit.generationID
+        citizens = Citizen.get_all_citizens_by_generation(generationID)
+        return citizens
