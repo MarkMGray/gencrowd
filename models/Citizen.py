@@ -8,7 +8,7 @@ class Citizen(ndb.Model):
     state = ndb.IntegerProperty()
     citizenID = ndb.IntegerProperty()
     generationID = ndb.IntegerProperty()
-    evaluation = ndb.LocalStructuredProperty(Evaluation)
+    evaluation = ndb.LocalStructuredProperty(Evaluation.Evaluation)
     numCols = ndb.IntegerProperty()
     numRows = ndb.IntegerProperty()
     fourPointClasses = ndb.StructuredProperty(FourPointClassifier)

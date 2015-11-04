@@ -2,45 +2,49 @@ import json
 import cgi
 import webapp2
 from models import Citizen
+from models import Evaluation
 
 class SaveCitizen(webapp2.RequestHandler):
     def post(self):
         print "In SaveCitizen"
-        print self.request.get("numrows")
-        print "----"
-        print self.request.get("evaluation")
-        s = self.request.get("evaluation")
-        print s
-        print "----"
-        print type(self.request.get("evaluation"))
-        # temp = json.loads(self.request.get("evaluation"))
-        print "request"
-        print self.request
-        print "end"
-        citizenID = cgi.escape(self.request.get("citizenID"))
-        generationID = cgi.escape(self.request.get("generationID"))
-        evaluation = self.request.get("evaluation")
+        s = self.request.get("data")
+        data = json.loads(s)
+        citizenID = data["citizenID"]
+        generationID = data["generationID"]
+        evaluationDict = data["evaluation"]
         response_obj={}
-        # if not citizenID or len(citizenID) == 0:
-        #     response_obj["response_code"] = 1
-        #     response_obj["error_msg"] = "Citizen ID missing"
-        #     self.response.write(json.dumps(response_obj))
-        #     return
-        # citizenID = int(citizenID)
-        # if not generationID or len(generationID) == 0:
-        #     response_obj["response_code"] = 1
-        #     response_obj["error_msg"] = "Generation ID missing"
-        #     self.response.write(json.dumps(response_obj))
-        #     return
-        # generationID = int(generationID)
-
-        if not evaluation:
+        if not citizenID or len(citizenID) == 0:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Citizen ID missing"
+            self.response.write(json.dumps(response_obj))
+            return
+        citizenID = int(citizenID)
+        if not generationID or len(generationID) == 0:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Generation ID missing"
+            self.response.write(json.dumps(response_obj))
+            return
+        generationID = int(generationID)
+        citizen = Citizen.Citizen.get_citizen(generationID, citizenID)
+        if not citizen:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Citizen doesn't exist"
+            self.response.write(json.dumps(response_obj))
+            return
+        if not evaluationDict:
             response_obj["response_code"] = 1
             response_obj["error_msg"] = "No evaluation given"
             self.response.write(json.dumps(response_obj))
             return
-        print "I come here"
-        print evaluation
+        citizen = Citizen.Citizen()
+        evaluationObj = Evaluation.Evaluation()
+        evaluationObj.startTime = evaluationDict["startMs"]
+        evaluationObj.startTime = evaluationDict["startMs"]
+        evaluationObj.endTime = evaluationDict["endMs"]
+        evaluationObj.evaluationScore = evaluationDict["surveyScore"]
+        evaluationObj.clicks = evaluationDict["clicks"]
+        citizen.evaluation = evaluationObj
+        citizen.put()
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
         self.response.write(json.dumps(response_obj))
