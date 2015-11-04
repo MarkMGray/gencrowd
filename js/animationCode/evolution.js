@@ -65,6 +65,9 @@ Citizen.prototype.getSaveData = function() {
 	saveData.fourPointClasser.s = this.fourPointClasser.s;
 	saveData.fourPointClasser.w = this.fourPointClasser.w;
 
+	saveData.generationID = "0";
+	saveData.citizenID = "0";
+
 
 	saveData.cellData = [];
 	for (var i = 0; i < this.display.cells.length; i++) {

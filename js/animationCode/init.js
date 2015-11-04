@@ -42,14 +42,19 @@ el("submitButt").onclick = function() {
 		$("#finishButt").slideDown();
 	}
 
-
-	console.log(DISPLAY.citizen.getSaveData()) // send this to server
 	var postObj = DISPLAY.citizen.getSaveData();
+	postObj
+	console.log(JSON.stringify(postObj))
 	$("#overlay").show();
-	$.post("/api/save", postObj, function (data) {
+	$.post("/api/save", JSON.stringify(postObj), function (data) {
 		console.log(data);
+		var jsonObj = $.parseJSON(data);
 
-		toastr.success("Successfully saved response!");
+		if(jsonObj["response_code"] != 0) {
+			toastr.error("Error: " + jsonObj["error_msg"]);
+		} else {
+			toastr.success("Successfully saved response!");
+		}
 		$("#overlay").delay(500).hide(0);
 	})
 		.fail(function () {
