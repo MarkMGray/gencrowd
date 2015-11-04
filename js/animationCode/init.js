@@ -51,6 +51,10 @@ el("submitButt").onclick = function() {
 
 		toastr.success("Successfully saved response!");
 		$("#overlay").delay(500).hide(0);
+	})
+		.fail(function () {
+			toastr.error("Failed to save response!");
+			$("#overlay").delay(500).hide(0);
 	});
 
 }
