@@ -53,7 +53,7 @@ class SaveCitizen(webapp2.RequestHandler):
         # citizen = Citizen.Citizen()
         # citizen.state = 0
         # citizen.generationID = 1
-        # citizen.citizenID = 10
+        # citizen.citizenID = 20
         # citizen.numRows = data["numrows"]
         # citizen.numCols = data["numcols"]
         # citizen.evaluation = None
@@ -99,6 +99,8 @@ class FetchCitizen(webapp2.RequestHandler):
         response_obj = {}
         response_obj["response_code"] = 0
         if toSendCitizen is None:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Could not load citizen!"
             response_obj["citizen"] = "null"
         else:
             # TODO : Change the state of the citizen to 1 (locked)

@@ -1,25 +1,71 @@
 
-FOURPOINTCLASSER = new FourPointClasser(WGT_POOL_SIZE);
-console.log(FOURPOINTCLASSER)
+$.post("/api/fetch", function(data) {
+	var jsonObj = $.parseJSON(data);
 
-// var DISPLAY = new GameDisplay(el("playDiv"));
-window.addEventListener("resize", function() {DISPLAY.redraw();});
-// DISPLAY.initialize(COLS, ROWS)
-// DISPLAY.redraw()
+	if(jsonObj["response_code"] != 0) {
+		toastr.error("Error: " + jsonObj["error_msg"]);
+	} else {
+		var citizen = jsonObj["citizen"];
+		var fourPointClasserDict = citizen["fourPointClasser"];
+		var classPool = citizen["classPool"];
+		citizenID = citizen["citizenID"];
+		generationID = citizen["generationID"];
+		var numRows = citizen["numrows"];
+		var numCols = citizen["numcols"];
+		var cellData = citizen["cellData"];
 
-var DISPLAY = new GameDisplay(el("playDiv"));
-DISPLAY.initialize(COLS, ROWS);
+		// rebuild four point classer
+		var fpClasser = new FourPointClasser(false, fourPointClasserDict["n"],fourPointClasserDict["s"], fourPointClasserDict["e"], fourPointClasserDict["w"], fourPointClasserDict["classes"]);
+		FOURPOINTCLASSER = fpClasser;
+		console.log(fpClasser);
 
-var evolver = new Evolution(popsize=15, maxperiodicity=10, COLS, ROWS);
-var gens = 6;
+		// var DISPLAY = new GameDisplay(el("playDiv"));
+		window.addEventListener("resize", function() {DISPLAY.redraw();});
+		// DISPLAY.initialize(COLS, ROWS)
+		// DISPLAY.redraw()
 
-for (var g = 0; g < gens; g++) {
-	evolver.oneGen();
-	console.log(evolver.population[0].score)
-}
-DISPLAY.setCitizen(evolver.population[0], FOURPOINTCLASSER)
-console.log(DISPLAY)
-DISPLAY.redraw()
+		// create the game display
+		DISPLAY = new GameDisplay(el("playDiv"));
+		// initialize
+		DISPLAY.initialize(COLS, ROWS);
+		// Overwrite the cells to show historic data
+
+
+		//var evolver = new Evolution(popsize=15, maxperiodicity=10, COLS, ROWS);
+		//var gens = 6;
+        //
+		//for (var g = 0; g < gens; g++) {
+		//	evolver.oneGen();
+		//	console.log(evolver.population[0].score)
+		//}
+
+		// create a default citizen to fill in
+		var citizen = new Citizen(DISPLAY, 10, 5);
+
+		// add the weight pool
+		citizen.weightPool = classPool;
+
+		DISPLAY.setCellConfig(cellData, numRows, numCols, classPool, DISPLAY);
+
+		console.log(citizen);
+
+		DISPLAY.setCitizen(citizen, FOURPOINTCLASSER)
+		console.log(DISPLAY)
+		DISPLAY.redraw()
+
+		console.log("Loaded citizen!");
+		console.log("Citizen: " + citizenID);
+
+
+
+	}
+
+}).fail(function() {
+	toastr.error("Failed to load citizen!");
+});
+
+
+
 
 el("finishButt").onclick = function() {
 	$("#submitDiv").slideDown(500);
@@ -43,6 +89,8 @@ el("submitButt").onclick = function() {
 	}
 
 	var postObj = DISPLAY.citizen.getSaveData();
+	postObj.citizenID = citizenID.toString();
+	postObj.generationID = generationID.toString();
 	postObj = {"data" :  JSON.stringify(postObj)}
 	console.log(postObj)
 
