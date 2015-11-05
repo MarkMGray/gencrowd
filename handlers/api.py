@@ -26,66 +26,72 @@ class SaveCitizen(webapp2.RequestHandler):
             self.response.write(json.dumps(response_obj))
             return
         generationID = int(generationID)
-        citizen = Citizen.Citizen.get_citizen(generationID, citizenID)
-        if not citizen:
-            response_obj["response_code"] = 1
-            response_obj["error_msg"] = "Citizen doesn't exist"
-            self.response.write(json.dumps(response_obj))
-            return
+        # citizen = Citizen.Citizen.get_citizen(generationID, citizenID)
+        # if not citizen:
+        #     response_obj["response_code"] = 1
+        #     response_obj["error_msg"] = "Citizen doesn't exist"
+        #     self.response.write(json.dumps(response_obj))
+        #     return
         if not evaluationDict:
             response_obj["response_code"] = 1
             response_obj["error_msg"] = "No evaluation given"
             self.response.write(json.dumps(response_obj))
             return
-        evaluationObj = Evaluation.Evaluation()
-        evaluationObj.startTime = evaluationDict["startMs"]
-        evaluationObj.startTime = evaluationDict["startMs"]
-        evaluationObj.endTime = evaluationDict["endMs"]
-        evaluationObj.evaluationScore = evaluationDict["surveyScore"]
-        evaluationObj.clicks = evaluationDict["clicks"]
-        # TODO : Change the state of the citizen to 2 (evaluated)
-        citizen.evaluation = evaluationObj
-        citizen.put()
-        response_obj["response_code"] = 0
-        response_obj["message"] = "Saved Citizen Successfully"
-        self.response.write(json.dumps(response_obj))
-        return
-        # citizen = Citizen.Citizen()
-        # citizen.state = 0
-        # citizen.generationID = 1
-        # citizen.citizenID = 10
-        # citizen.numRows = data["numrows"]
-        # citizen.numCols = data["numcols"]
-        # citizen.evaluation = None
-        # fourPointDict = data["fourPointClasser"]
-        # citizen.fourPointClasses = CitizenHelper.FourPointClassifier()
-        # citizen.fourPointClasses.regionClasses = fourPointDict["classes"]
-        # citizen.fourPointClasses.north = fourPointDict["n"]
-        # citizen.fourPointClasses.south = fourPointDict["s"]
-        # citizen.fourPointClasses.east = fourPointDict["e"]
-        # citizen.fourPointClasses.west = fourPointDict["w"]
-        # classPoolObj = data["classPool"]
-        # citizen.classPool = []
-        # for cP in classPoolObj:
-        #     cPObj = CitizenHelper.Perceptron()
-        #     cPObj.pool = cP
-        #     citizen.classPool.append(cPObj)
-        # cells = data["cellData"]
-        # citizen.cellData = []
-        # for cellD in cells:
-        #     cell = CitizenHelper.Cell()
-        #     cell.bias = cellD["bias"]
-        #     cell.x = cellD["x"]
-        #     cell.y = cellD["y"]
-        #     cell.wrap = cellD["wrap"]
-        #     cell.origActivation = cellD["origActivation"]
-        #     cell.classPoolIndex = cellD["classPoolIndex"]
-        #     citizen.cellData.append(cell)
+        # evaluationObj = Evaluation.Evaluation()
+        # evaluationObj.startTime = evaluationDict["startMs"]
+        # evaluationObj.startTime = evaluationDict["startMs"]
+        # evaluationObj.endTime = evaluationDict["endMs"]
+        # evaluationObj.evaluationScore = evaluationDict["surveyScore"]
+        # evaluationObj.clicks = evaluationDict["clicks"]
+        # # TODO : Change the state of the citizen to 2 (evaluated)
+        # citizen.evaluation = evaluationObj
         # citizen.put()
         # response_obj["response_code"] = 0
         # response_obj["message"] = "Saved Citizen Successfully"
         # self.response.write(json.dumps(response_obj))
         # return
+        citizen = Citizen.Citizen()
+        gen_citizens = Citizen.Citizen.get_all_citizens_by_generation(1)
+        citID = 1
+        if gen_citizens:
+            for cit in gen_citizens:
+                if cit.citizenID > citID:
+                    citID = cit.citizenID + 1
+        citizen.state = 0
+        citizen.generationID = 1
+        citizen.citizenID = citID
+        citizen.numRows = data["numrows"]
+        citizen.numCols = data["numcols"]
+        citizen.evaluation = None
+        fourPointDict = data["fourPointClasser"]
+        citizen.fourPointClasses = CitizenHelper.FourPointClassifier()
+        citizen.fourPointClasses.regionClasses = fourPointDict["classes"]
+        citizen.fourPointClasses.north = fourPointDict["n"]
+        citizen.fourPointClasses.south = fourPointDict["s"]
+        citizen.fourPointClasses.east = fourPointDict["e"]
+        citizen.fourPointClasses.west = fourPointDict["w"]
+        classPoolObj = data["classPool"]
+        citizen.classPool = []
+        for cP in classPoolObj:
+            cPObj = CitizenHelper.Perceptron()
+            cPObj.pool = cP
+            citizen.classPool.append(cPObj)
+        cells = data["cellData"]
+        citizen.cellData = []
+        for cellD in cells:
+            cell = CitizenHelper.Cell()
+            cell.bias = cellD["bias"]
+            cell.x = cellD["x"]
+            cell.y = cellD["y"]
+            cell.wrap = cellD["wrap"]
+            cell.origActivation = cellD["origActivation"]
+            cell.classPoolIndex = cellD["classPoolIndex"]
+            citizen.cellData.append(cell)
+        citizen.put()
+        response_obj["response_code"] = 0
+        response_obj["message"] = "Saved Citizen Successfully"
+        self.response.write(json.dumps(response_obj))
+        return
 
 class FetchCitizen(webapp2.RequestHandler):
     def post(self):
