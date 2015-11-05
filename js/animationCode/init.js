@@ -64,6 +64,13 @@
 //	toastr.error("Failed to load citizen!");
 //});
 
+FOURPOINTCLASSER = new FourPointClasser(true, WGT_POOL_SIZE);
+console.log(FOURPOINTCLASSER)
+
+// var DISPLAY = new GameDisplay(el("playDiv"));
+window.addEventListener("resize", function() {DISPLAY.redraw();});
+// DISPLAY.initialize(COLS, ROWS)
+// DISPLAY.redraw()
 
 var DISPLAY = new GameDisplay(el("playDiv"));
 DISPLAY.initialize(COLS, ROWS);
