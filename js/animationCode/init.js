@@ -64,6 +64,13 @@
 //	toastr.error("Failed to load citizen!");
 //});
 
+FOURPOINTCLASSER = new FourPointClasser(true, WGT_POOL_SIZE);
+console.log(FOURPOINTCLASSER)
+
+// var DISPLAY = new GameDisplay(el("playDiv"));
+window.addEventListener("resize", function() {DISPLAY.redraw();});
+// DISPLAY.initialize(COLS, ROWS)
+// DISPLAY.redraw()
 
 var DISPLAY = new GameDisplay(el("playDiv"));
 DISPLAY.initialize(COLS, ROWS);
@@ -101,8 +108,8 @@ el("submitButt").onclick = function() {
 	}
 
 	var postObj = DISPLAY.citizen.getSaveData();
-	postObj.citizenID = citizenID.toString();
-	postObj.generationID = generationID.toString();
+	postObj.citizenID = "0";//citizenID.toString();
+	postObj.generationID = "1"; // generationID.toString();
 	postObj = {"data" :  JSON.stringify(postObj)}
 	console.log(postObj)
 
