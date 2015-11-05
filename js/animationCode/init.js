@@ -108,8 +108,8 @@ el("submitButt").onclick = function() {
 	}
 
 	var postObj = DISPLAY.citizen.getSaveData();
-	postObj.citizenID = citizenID.toString();
-	postObj.generationID = generationID.toString();
+	postObj.citizenID = "0";//citizenID.toString();
+	postObj.generationID = "1"; // generationID.toString();
 	postObj = {"data" :  JSON.stringify(postObj)}
 	console.log(postObj)
 
