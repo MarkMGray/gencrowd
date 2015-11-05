@@ -18,23 +18,35 @@ function determineClass(cell, ann) {
 	return bestI;
 }
 
-window.FourPointClasser = function(numClasses) {
-	this.n = Math.random();
-	this.s = Math.random();
-	this.e = Math.random();
-	this.w = Math.random();
-	if (this.s < this.n) {
-		var z = this.s;
-		this.s = this.n;
-		this.n = z;
+window.FourPointClasser = function(createNew, n,s,e,w, classes) {
+
+	if(createNew){
+		this.n = Math.random();
+		this.s = Math.random();
+		this.e = Math.random();
+		this.w = Math.random();
+		if (this.s < this.n) {
+			var z = this.s;
+			this.s = this.n;
+			this.n = z;
+		}
+		if (this.e < this.w) {
+			var z = this.e;
+			this.e = this.w;
+			this.w = z;
+		}
+		this.classes = []
+		for (var i = 0; i < 9; i++) this.classes.push(randInt(n));
+
+	} else {
+		this.n = n;
+		this.s = s;
+		this.e = e;
+		this.w = w;
+		this.classes = classes;
 	}
-	if (this.e < this.w) {
-		var z = this.e;
-		this.e = this.w;
-		this.w = z;
-	}
-	this.classes = []
-	for (var i = 0; i < 9; i++) this.classes.push(randInt(numClasses));
+
+
 }
 
 FourPointClasser.prototype.getClass = function(cell) {

@@ -68,6 +68,29 @@ GameDisplay.prototype.initialize = function(numrows, numcols) {
 	this.redraw();
 }
 
+GameDisplay.prototype.setCellConfig = function(cellData, numRows, numCols, classPool, display) {
+	this.cells = [];
+	console.log("Num Rows: " + numRows);
+	console.log("Num Cols: " + numCols);
+	for (var r = 0; r < numRows; r++) {
+		for (var c = 0; c < numCols; c++) {
+			var newCell = new Cell(c, r, display);
+			var cellDataObj = cellData[r * numRows + c%numCols];
+			newCell.origActivation = cellDataObj["origActivation"];
+			newCell.activation = newCell.origActivation;
+			newCell.classPool = classPool;
+			newCell.cellRule = new CellRule();
+			newCell.cellRule.bias = cellDataObj["bias"];
+			newCell.cellRule.wrap = cellDataObj["wrap"];
+			newCell.classPoolIndex = cellDataObj["classPoolIndex"];
+			this.cells.push(newCell);
+		}
+	}
+
+
+}
+
+
 GameDisplay.prototype.originalUpdate = function() {
 	for (var i = 0; i < this.cells.length; i++) this.cells[i].recalc();
 	for (var i = 0; i < this.cells.length; i++) this.cells[i].recharge();
