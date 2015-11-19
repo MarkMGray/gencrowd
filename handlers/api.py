@@ -125,4 +125,55 @@ class FetchCitizen(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
-app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen)], debug=True)
+class SaveNewCitizen:
+    def post(self):
+        print "In New Citizen"
+        s = self.request.get("data")
+        data = json.loads(s)
+        response_obj={}
+        citizen = Citizen.Citizen()
+        gen_citizens = Citizen.Citizen.get_all_citizens_by_generation(1)
+        citID = 1
+        if gen_citizens:
+            for cit in gen_citizens:
+                if cit.citizenID >= citID:
+                    citID = cit.citizenID + 1
+        citizen.state = 0
+        citizen.generationID = 1
+        citizen.citizenID = citID
+        citizen.numRows = data["numrows"]
+        citizen.numCols = data["numcols"]
+        citizen.evaluation = None
+        fourPointDict = data["fourPointClasser"]
+        citizen.fourPointClasses = CitizenHelper.FourPointClassifier()
+        citizen.fourPointClasses.regionClasses = fourPointDict["classes"]
+        citizen.fourPointClasses.north = fourPointDict["n"]
+        citizen.fourPointClasses.south = fourPointDict["s"]
+        citizen.fourPointClasses.east = fourPointDict["e"]
+        citizen.fourPointClasses.west = fourPointDict["w"]
+        classPoolObj = data["classPool"]
+        citizen.classPool = []
+        for cP in classPoolObj:
+            cPObj = CitizenHelper.Perceptron()
+            cPObj.pool = cP
+            citizen.classPool.append(cPObj)
+        cells = data["cellData"]
+        citizen.cellData = []
+        for cellD in cells:
+            cell = CitizenHelper.Cell()
+            cell.bias = cellD["bias"]
+            cell.x = cellD["x"]
+            cell.y = cellD["y"]
+            cell.z = cellD["z"]
+            cell.wrap = cellD["wrap"]
+            cell.origActivation = cellD["origActivation"]
+            cell.classPoolIndex = cellD["classPoolIndex"]
+            citizen.cellData.append(cell)
+        citizen.put()
+        response_obj["response_code"] = 0
+        response_obj["message"] = "Saved New Citizen Successfully"
+        self.response.write(json.dumps(response_obj))
+        return
+
+app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen),
+                               ('/api/newcitizen'), SaveNewCitizen], debug=True)
