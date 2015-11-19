@@ -32,8 +32,7 @@
 <script src="js/animationCode/activationFunction.js"></script>
 <script src="js/animationCode/annBasics.js"></script>
 <script>
-
-	function el(e) {return document.getElementById(e);}
+function el(e) {return document.getElementById(e);}
 	function oneOf(v) {return v[randomInt(v.length)];}
 	function isNan(x) {return x == null || !(Math.abs(x) >= 0);}
 	function contains(x, array) {
@@ -73,14 +72,16 @@
 	    return null;
 	}
 
-	COLS = 15;
-	ROWS = 15;
+	COLS = 25;
+	ROWS = 10;
 	WRAP = true;
 	DIAG_NEIGBS = false;
 	WGT_POOL_SIZE = 5;
+	NUM_OBJ_CLASSES = 3;
 	DECAY = 1;
+	ANIMATION_SPEED = 300;
+	SELFOK = true;
 	HYPERMODELER = createFFNeuralNetwork(2, [8, 8], WGT_POOL_SIZE);
-
 </script>
 <script src="js/animationCode/evolution.js"></script>
 <script src="js/animationCode/gameScreen.js"></script>

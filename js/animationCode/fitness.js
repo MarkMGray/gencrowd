@@ -86,7 +86,7 @@ function getPerUnit(array, other) {
 	return array.length == COLS * ROWS ? other : array.length;
 }
 function getDeepest(array, lastLength, lastLastLength) {
-	if (array.length == COLS * ROWS) {
+	if (array.length == COLS * ROWS * NUM_OBJ_CLASSES) {
 		if (lastLastLength > 1) return lastLength;
 		else return 0;
 	}

@@ -64,8 +64,9 @@
 //	toastr.error("Failed to load citizen!");
 //});
 
-FOURPOINTCLASSER = new FourPointClasser(true, WGT_POOL_SIZE);
-console.log(FOURPOINTCLASSER)
+FOURPOINTCLASSER = new FourPointClasser(true, WGT_POOL_SIZE, NUM_OBJ_CLASSES);
+console.log(FOURPOINTCLASSER);
+CLASSER = FOURPOINTCLASSER;
 
 // var DISPLAY = new GameDisplay(el("playDiv"));
 window.addEventListener("resize", function() {DISPLAY.redraw();});
@@ -73,10 +74,10 @@ window.addEventListener("resize", function() {DISPLAY.redraw();});
 // DISPLAY.redraw()
 
 var DISPLAY = new GameDisplay(el("playDiv"));
-DISPLAY.initialize(COLS, ROWS);
+DISPLAY.initialize(COLS, ROWS, NUM_OBJ_CLASSES);
 
-var evolver = new Evolution(popsize=15, maxperiodicity=10, COLS, ROWS);
-var gens = 6;
+var evolver = new Evolution(popsize=15, maxperiodicity=10, COLS, ROWS, NUM_OBJ_CLASSES);
+var gens = 3;
 
 for (var g = 0; g < gens; g++) {
 	evolver.oneGen();
