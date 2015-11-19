@@ -1,7 +1,7 @@
 from google.appengine.ext import ndb
 
 class Perceptron(ndb.Model):
-    pool = ndb.IntegerProperty(repeated=True)
+    pool = ndb.FloatProperty(repeated=True)
 
 class Cell(ndb.Model):
     bias = ndb.FloatProperty()
@@ -10,12 +10,14 @@ class Cell(ndb.Model):
     wrap = ndb.BooleanProperty()
     x = ndb.IntegerProperty()
     y = ndb.IntegerProperty()
+    z = ndb.IntegerProperty()
 
     def toDict(self):
         dictionary = {}
         dictionary["bias"] = self.bias
         dictionary["x"] = self.x
         dictionary["y"] = self.y
+        dictionary["z"] = self.z
         dictionary["wrap"] = self.wrap
         dictionary["origActivation"] = self.origActivation
         dictionary["classPoolIndex"] = self.classPoolIndex

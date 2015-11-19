@@ -163,6 +163,7 @@ class SaveNewCitizen:
             cell.bias = cellD["bias"]
             cell.x = cellD["x"]
             cell.y = cellD["y"]
+            cell.z = cellD["z"]
             cell.wrap = cellD["wrap"]
             cell.origActivation = cellD["origActivation"]
             cell.classPoolIndex = cellD["classPoolIndex"]
