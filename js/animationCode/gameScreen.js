@@ -93,23 +93,28 @@ GameDisplay.prototype.getCell = function(x, y, z) {
 	return this.cells[inz + z*this.numcols*this.numrows];
 }
 
-GameDisplay.prototype.setCellConfig = function(cellData, numRows, numCols, classPool, display) {
+GameDisplay.prototype.setCellConfig = function(cellData, numRows, numCols, depth, classPool, display) {
 	this.cells = [];
 	console.log("Num Rows: " + numRows);
 	console.log("Num Cols: " + numCols);
-	for (var r = 0; r < numRows; r++) {
-		for (var c = 0; c < numCols; c++) {
-			var newCell = new Cell(c, r, display);
-			var cellDataObj = cellData[r * numRows + c%numCols];
-			newCell.origActivation = cellDataObj["origActivation"];
-			newCell.activation = newCell.origActivation;
-			newCell.classPool = classPool;
-			newCell.cellRule = new CellRule();
-			newCell.cellRule.bias = cellDataObj["bias"];
-			newCell.cellRule.wrap = cellDataObj["wrap"];
-			newCell.classPoolIndex = cellDataObj["classPoolIndex"];
-			this.cells.push(newCell);
-		}
+	for(var i = 0; i < cellData.length; i++){
+		var cellDataObj = cellData[i];
+		var area = numCols*numRows;
+		var j = i % area;
+		var y = Math.floor(j / numCols);
+		var x = j - y* numCols;
+		var z = Math.floor(i/area);
+
+		var newCell = new Cell(x,y,z, display);
+
+		newCell.origActivation = cellDataObj["origActivation"];
+		newCell.activation = newCell.origActivation;
+		newCell.classPool = classPool;
+		newCell.cellRule = new CellRule();
+		newCell.cellRule.bias = cellDataObj["bias"];
+		newCell.cellRule.wrap = cellDataObj["wrap"];
+		newCell.classPoolIndex = cellDataObj["classPoolIndex"];
+		this.cells.push(newCell);
 	}
 
 
@@ -139,5 +144,6 @@ GameDisplay.prototype.setCitizen = function(citizen, fourPointClasser) {
 	this.cells = this.citizen.display.cells;
 	this.citizen.evaluation.startMs = (new Date()).getTime();
 	this.citizen.fourPointClasser = fourPointClasser;
+
 	this.id = this.citizen.display.id;
 }

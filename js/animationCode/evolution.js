@@ -142,6 +142,9 @@ Citizen.prototype.getSaveData = function() {
 
 
 	saveData.cellData = [];
+	console.log("Saving cell data: " );
+	console.log(this.display.cells);
+	console.log(this.display.cells.length);
 	for (var i = 0; i < this.display.cells.length; i++) {
 		var c = this.display.cells[i];
 		saveData.cellData.push({
@@ -154,5 +157,6 @@ Citizen.prototype.getSaveData = function() {
 			z : c.z
 		});
 	}
+	console.log(saveData.cellData);
 	return saveData;
 }
