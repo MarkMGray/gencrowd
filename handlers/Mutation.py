@@ -8,7 +8,7 @@ class Mutation:
         old_gen_id = previous_gen_citizens[0].generationID
         next_gen_citizens = []
         # Mutation here
-        
+
         # Saving new generation citizens
         new_citizen_id = 1
         new_gen_id = old_gen_id+1

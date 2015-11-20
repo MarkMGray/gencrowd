@@ -75,7 +75,7 @@ class FetchCitizen(webapp2.RequestHandler):
         if toSendCitizen is None:
             response_obj["citizen"] = "null"
         else:
-            toSendCitizen.state = 1;
+            toSendCitizen.state = 1
             toSendCitizen.put()
             citizen = {}
             citizen["state"] = toSendCitizen.state
@@ -91,7 +91,7 @@ class FetchCitizen(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
-class SaveNewCitizen:
+class SaveNewCitizen(webapp2.RequestHandler):
     def post(self):
         print "In New Citizen"
         s = self.request.get("data")
@@ -142,4 +142,4 @@ class SaveNewCitizen:
         return
 
 app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen),
-                               ('/api/newcitizen'), SaveNewCitizen], debug=True)
+                               ('/api/newcitizen', SaveNewCitizen)], debug=True)

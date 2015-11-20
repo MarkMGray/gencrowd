@@ -8,12 +8,14 @@ window.Citizen = function(display, maxPeriodicity, wgtPoolSize) {
 	this.periodicity = new Periodicity(maxPeriodicity);
 	this.periodicity.attachToDisplay(display);
 	this.wgtPoolSize = wgtPoolSize;
-	this.weightPool = randomWeightPool(wgtPoolSize);
+	var c = this.display.getCell(1,1,NUM_OBJ_CLASSES-1);
+	var numneighbs = c.getNeighbors(DIAG_NEIGBS, c.wrap).length
+	this.weightPool = randomWeightPool(wgtPoolSize, numneighbs);
 	this.evaluation = new Evaluation();
 }
 
-function randomWeightPool(size) {
-	var numInputs = 5; // Self, L, R, U, D
+function randomWeightPool(size, numInputs) {
+	// var numInputs = NUM_OBJ_CLASSES + 4; // Self + z's, L, R, U, D
 	if (DIAG_NEIGBS) numInputs += 4; // diagonals
 	// TODO other classes, memory (non-markov) frames
 	var result = [];
@@ -28,7 +30,7 @@ function randomWeightPool(size) {
 Citizen.prototype.mutate = function(rate) {
 	for (var i = 0; i < this.display.cells.length; i++) {
 		var c = this.display.cells[i];
-		if (Math.random() < rate) this.display.cells[i] = new Cell(c.x, c.y, this.display);
+		if (Math.random() < rate) this.display.cells[i] = new Cell(c.x, c.y, c.z, this.display);
 	}
 }
 
@@ -43,52 +45,12 @@ Citizen.prototype.mate = function(partner, evo) {
 	return citizen;
 }
 
-Citizen.prototype.getSaveData = function() {
-	var saveData = {};
-
-	saveData.evaluation = {};
-
-	saveData.evaluation.clicks = this.evaluation.clicks;
-	saveData.evaluation.endMs = this.evaluation.endMs;
-	saveData.evaluation.startMs = this.evaluation.startMs;
-	saveData.evaluation.surveyScore = this.evaluation.surveyScore;
-
-	saveData.numrows = this.display.numrows;
-	saveData.numcols = this.display.numcols;
-	saveData.classPool = this.display.cells[0].classPool;
-
-	saveData.fourPointClasser = {};
-
-	saveData.fourPointClasser.classes = this.fourPointClasser.classes;
-	saveData.fourPointClasser.e = this.fourPointClasser.e;
-	saveData.fourPointClasser.n = this.fourPointClasser.n;
-	saveData.fourPointClasser.s = this.fourPointClasser.s;
-	saveData.fourPointClasser.w = this.fourPointClasser.w;
-
-	saveData.generationID = "0";
-	saveData.citizenID = "0";
-
-
-	saveData.cellData = [];
-	for (var i = 0; i < this.display.cells.length; i++) {
-		var c = this.display.cells[i];
-		saveData.cellData.push({
-			classPoolIndex : c.classPoolIndex,
-			origActivation : c.origActivation,
-			bias : c.cellRule.bias,
-			wrap : c.cellRule.wrap,
-			x : c.x,
-			y : c.y
-		});
-	}
-	return saveData;
-}
-
-window.Evolution = function(popSize, maxPeriodicity, cols, rows) {
+window.Evolution = function(popSize, maxPeriodicity, cols, rows, numobjs) {
 	this.population = [];
 	this.maxPeriodicity = maxPeriodicity;
 	this.cols = cols;
 	this.rows = rows;
+	this.numobjs = numobjs;
 	for (var i = 0; i < popSize; i++) {
 		this.population.push(this.newCitizen());
 	}
@@ -102,7 +64,7 @@ window.Evolution = function(popSize, maxPeriodicity, cols, rows) {
 
 Evolution.prototype.newCitizen = function() {
 	var display = new GameDisplay();
-	display.initialize(this.cols, this.rows);
+	display.initialize(this.cols, this.rows, this.numobjs);
 	var result = new Citizen(display, this.maxPeriodicity, WGT_POOL_SIZE);
 	for (var i = 0; i < result.display.cells.length; i++) {
 		result.display.cells[i].connectToClassPool(result.weightPool);
@@ -151,4 +113,50 @@ function mutateScore(s) {
 
 window.Evaluation = function() {
 	this.clicks = [];
+}
+
+Citizen.prototype.getSaveData = function() {
+	var saveData = {};
+
+	saveData.evaluation = {};
+
+	saveData.evaluation.clicks = this.evaluation.clicks;
+	saveData.evaluation.endMs = this.evaluation.endMs;
+	saveData.evaluation.startMs = this.evaluation.startMs;
+	saveData.evaluation.surveyScore = this.evaluation.surveyScore;
+
+	saveData.numrows = this.display.numrows;
+	saveData.numcols = this.display.numcols;
+	saveData.classPool = this.display.cells[0].classPool;
+
+	saveData.fourPointClasser = {};
+
+	saveData.fourPointClasser.classes = this.fourPointClasser.classes;
+	saveData.fourPointClasser.e = this.fourPointClasser.e;
+	saveData.fourPointClasser.n = this.fourPointClasser.n;
+	saveData.fourPointClasser.s = this.fourPointClasser.s;
+	saveData.fourPointClasser.w = this.fourPointClasser.w;
+
+	saveData.generationID = "0";
+	saveData.citizenID = "0";
+
+
+	saveData.cellData = [];
+	console.log("Saving cell data: " );
+	console.log(this.display.cells);
+	console.log(this.display.cells.length);
+	for (var i = 0; i < this.display.cells.length; i++) {
+		var c = this.display.cells[i];
+		saveData.cellData.push({
+			classPoolIndex : c.classPoolIndex,
+			origActivation : c.origActivation,
+			bias : c.cellRule.bias,
+			wrap : c.cellRule.wrap,
+			x : c.x,
+			y : c.y,
+			z : c.z
+		});
+	}
+	console.log(saveData.cellData);
+	return saveData;
 }

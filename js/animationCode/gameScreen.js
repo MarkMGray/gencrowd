@@ -1,8 +1,9 @@
 
-
+ID = 0;
 
 window.GameDisplay = function(parentElement) {
-
+	this.isMain = parentElement ? true : false;
+	this.id = ID++;
 	this.parent = parentElement;
 	CANVAS = this.canvas = document.createElement('canvas');
 	this.ctx = this.canvas.getContext('2d');
@@ -16,23 +17,24 @@ window.GameDisplay = function(parentElement) {
 	this.animating = false;
 
 	if (parentElement) parentElement = parentElement.appendChild(this.canvas);
-	
+
 	var display = this;
 	setTimeout(function() {
 		display.animating = !display.animating;
-		display.animate(300);
+		display.animate(ANIMATION_SPEED);
 	}, 100)
 	CANVAS.addEventListener('click', function(event) {
 		if (display.parent) {
 			console.log(event)
 			var ww = display.getColW();
 			var hh = display.getRowH();
-			var x = Math.max(0, event.layerX - ww / 2) / (ww/2 + 0);
-			var y = Math.max(0, event.layerY - hh / 2) / (hh/2 + 0);
-			var cell = display.getCell(Math.floor(x), Math.floor(y));
+			var x = Math.max(0, event.layerX - ww / 2) / (ww + 0);
+			var y = Math.max(0, event.layerY - hh / 2) / (hh + 0);
+			var cell = display.getCell(Math.floor(x), Math.floor(y), 0);
 			cell.beClicked(display.ctx, ww, hh);
 			console.log(x + "	" + y)
-			console.log(event)
+			console.log(cell)
+			console.log(cell.getNeighbors(DIAG_NEIGBS, cell.wrap))
 
 			display.citizen.evaluation.clicks.push((new Date()).getTime())
 		}
@@ -47,7 +49,7 @@ GameDisplay.prototype.getRowH = function() {
 }
 
 GameDisplay.prototype.animate = function(ms) {
-	if (!this.animating) return;
+	if (!this.isMain || !this.animating) return;
 	var display = this;
 	display.update();
 	setTimeout(function() {
@@ -55,41 +57,24 @@ GameDisplay.prototype.animate = function(ms) {
 	}, ms);
 }
 
-GameDisplay.prototype.initialize = function(numrows, numcols) {
+GameDisplay.prototype.initialize = function(numcols, numrows, numobjs) {
 	this.cells = [];
 	this.numrows = numrows;
 	this.numcols = numcols;
+	this.numobjs = numobjs;
 	var display = this;
-	for (var r = 0; r < numrows; r++) {
-		for (var c = 0; c < numcols; c++) {
-			this.cells.push(new Cell(c, r, display))
+	for (var o = 0; o < numobjs; o++) {
+		for (var r = 0; r < numrows; r++) {
+			for (var c = 0; c < numcols; c++) {
+				this.cells.push(new Cell(c, r, o, display))
+			}
 		}
 	}
+
 	this.redraw();
 }
 
-GameDisplay.prototype.setCellConfig = function(cellData, numRows, numCols, classPool, display) {
-	this.cells = [];
-	console.log("Num Rows: " + numRows);
-	console.log("Num Cols: " + numCols);
-	for (var r = 0; r < numRows; r++) {
-		for (var c = 0; c < numCols; c++) {
-			var newCell = new Cell(c, r, display);
-			var cellDataObj = cellData[r * numRows + c%numCols];
-			newCell.origActivation = cellDataObj["origActivation"];
-			newCell.activation = newCell.origActivation;
-			newCell.classPool = classPool;
-			newCell.cellRule = new CellRule();
-			newCell.cellRule.bias = cellDataObj["bias"];
-			newCell.cellRule.wrap = cellDataObj["wrap"];
-			newCell.classPoolIndex = cellDataObj["classPoolIndex"];
-			this.cells.push(newCell);
-		}
-	}
-
-
-}
-
+NARF = 0;
 
 GameDisplay.prototype.originalUpdate = function() {
 	for (var i = 0; i < this.cells.length; i++) this.cells[i].recalc();
@@ -101,10 +86,38 @@ GameDisplay.prototype.update = function() {
 	this.originalUpdate();
 }
 
-GameDisplay.prototype.getCell = function(x, y) {
+GameDisplay.prototype.getCell = function(x, y, z) {
 	var wx = (x + this.numcols) % this.numcols;
 	var wy = (y + this.numrows) % this.numrows;
-	return this.cells[wx + wy*this.numcols];
+	var inz = wx + wy*this.numcols;
+	return this.cells[inz + z*this.numcols*this.numrows];
+}
+
+GameDisplay.prototype.setCellConfig = function(cellData, numRows, numCols, depth, classPool, display) {
+	this.cells = [];
+	console.log("Num Rows: " + numRows);
+	console.log("Num Cols: " + numCols);
+	for(var i = 0; i < cellData.length; i++){
+		var cellDataObj = cellData[i];
+		var area = numCols*numRows;
+		var j = i % area;
+		var y = Math.floor(j / numCols);
+		var x = j - y* numCols;
+		var z = Math.floor(i/area);
+
+		var newCell = new Cell(x,y,z, display);
+
+		newCell.origActivation = cellDataObj["origActivation"];
+		newCell.activation = newCell.origActivation;
+		newCell.classPool = classPool;
+		newCell.cellRule = new CellRule();
+		newCell.cellRule.bias = cellDataObj["bias"];
+		newCell.cellRule.wrap = cellDataObj["wrap"];
+		newCell.classPoolIndex = cellDataObj["classPoolIndex"];
+		this.cells.push(newCell);
+	}
+
+
 }
 
 GameDisplay.prototype.redraw = function() {
@@ -131,4 +144,6 @@ GameDisplay.prototype.setCitizen = function(citizen, fourPointClasser) {
 	this.cells = this.citizen.display.cells;
 	this.citizen.evaluation.startMs = (new Date()).getTime();
 	this.citizen.fourPointClasser = fourPointClasser;
+
+	this.id = this.citizen.display.id;
 }
