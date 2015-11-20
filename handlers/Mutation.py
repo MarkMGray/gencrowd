@@ -12,6 +12,13 @@ NUM_OBJ_CLASSES = 3
 class Mutation:
     @classmethod
     def generateNextGeneration(cls):
+        # Create 10 new random citizens
+        # Sort citizens on evaluation (survey score)
+        # p and q and r - should sum up to one (20, 40, 40)
+        # Keep top p.. Kill eveything else
+        # Generate q new guys as mutations of the top p
+        # Generate r new guys from scratch
+        # This is your new generation.
         previous_gen_citizens = Citizen.Citizen.get_latest_generation_citizens()
         old_gen_id = previous_gen_citizens[0].generationID
         next_gen_citizens = []

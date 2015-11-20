@@ -167,5 +167,21 @@ class GenerateACitizen(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
-app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen),
+class GenerateFirstGen(webapp2.RequestHandler):
+    def get(self):
+        for i in range(0, 10):
+            citizen = Mutation.Mutation.createRandomNewCitizen(Mutation.ROWS, Mutation.COLS, Mutation.NUM_OBJ_CLASSES, Mutation.WGT_POOL_SIZE)
+            citizen.state = 0
+            citizen.citizenID = i+1
+            citizen.generationID = 1
+            citizen.put()
+        response_obj = {}
+        response_obj["response_code"] = 0
+        response_obj["msg"] = "Citizen generated"
+        response_obj["cID"] = citizen.citizenID
+        response_obj["gID"]  = citizen.generationID
+        self.response.write(json.dumps(response_obj))
+        return
+
+app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen), ('/api/genfirstgeneration', GenerateFirstGen),
                                ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen)], debug=True)
