@@ -4,6 +4,7 @@ import webapp2
 from models import Citizen
 from models import CitizenHelper
 from models import Evaluation
+from handlers import Mutation
 
 class SaveCitizen(webapp2.RequestHandler):
     def post(self):
@@ -49,49 +50,16 @@ class SaveCitizen(webapp2.RequestHandler):
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
         self.response.write(json.dumps(response_obj))
+        gen_citizens = Citizen.Citizen.get_latest_generation_citizens()
+        all_evaluated = True
+        for citizen in gen_citizens:
+            if citizen.state != 2:
+                all_evaluated = False
+                break
+        if all_evaluated:
+            print "Running the mutation algorithm"
+            Mutation.Mutation.generateNextGeneration()
         return
-        # citizen = Citizen.Citizen()
-        # gen_citizens = Citizen.Citizen.get_all_citizens_by_generation(1)
-        # citID = 1
-        # if gen_citizens:
-        #     for cit in gen_citizens:
-        #         if cit.citizenID >= citID:
-        #             citID = cit.citizenID + 1
-        # citizen.state = 0
-        # citizen.generationID = 1
-        # citizen.citizenID = citID
-        # citizen.numRows = data["numrows"]
-        # citizen.numCols = data["numcols"]
-        # citizen.evaluation = None
-        # fourPointDict = data["fourPointClasser"]
-        # citizen.fourPointClasses = CitizenHelper.FourPointClassifier()
-        # citizen.fourPointClasses.regionClasses = fourPointDict["classes"]
-        # citizen.fourPointClasses.north = fourPointDict["n"]
-        # citizen.fourPointClasses.south = fourPointDict["s"]
-        # citizen.fourPointClasses.east = fourPointDict["e"]
-        # citizen.fourPointClasses.west = fourPointDict["w"]
-        # classPoolObj = data["classPool"]
-        # citizen.classPool = []
-        # for cP in classPoolObj:
-        #     cPObj = CitizenHelper.Perceptron()
-        #     cPObj.pool = cP
-        #     citizen.classPool.append(cPObj)
-        # cells = data["cellData"]
-        # citizen.cellData = []
-        # for cellD in cells:
-        #     cell = CitizenHelper.Cell()
-        #     cell.bias = cellD["bias"]
-        #     cell.x = cellD["x"]
-        #     cell.y = cellD["y"]
-        #     cell.wrap = cellD["wrap"]
-        #     cell.origActivation = cellD["origActivation"]
-        #     cell.classPoolIndex = cellD["classPoolIndex"]
-        #     citizen.cellData.append(cell)
-        # citizen.put()
-        # response_obj["response_code"] = 0
-        # response_obj["message"] = "Saved Citizen Successfully"
-        # self.response.write(json.dumps(response_obj))
-        # return
 
 class FetchCitizen(webapp2.RequestHandler):
     def post(self):
@@ -107,7 +75,6 @@ class FetchCitizen(webapp2.RequestHandler):
         if toSendCitizen is None:
             response_obj["citizen"] = "null"
         else:
-            # TODO : Change the state of the citizen to 1 (locked)
             toSendCitizen.state = 1;
             toSendCitizen.put()
             citizen = {}
