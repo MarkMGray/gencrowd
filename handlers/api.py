@@ -4,6 +4,7 @@ import webapp2
 from models import Citizen
 from models import CitizenHelper
 from models import Evaluation
+from handlers import Mutation
 
 class SaveCitizen(webapp2.RequestHandler):
     def post(self):
@@ -49,6 +50,15 @@ class SaveCitizen(webapp2.RequestHandler):
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
         self.response.write(json.dumps(response_obj))
+        gen_citizens = Citizen.Citizen.get_latest_generation_citizens()
+        all_evaluated = True
+        for citizen in gen_citizens:
+            if citizen.state != 2:
+                all_evaluated = False
+                break
+        if all_evaluated:
+            print "Running the mutation algorithm"
+            Mutation.Mutation.generateNextGeneration()
         return
 
 class FetchCitizen(webapp2.RequestHandler):
@@ -65,8 +75,7 @@ class FetchCitizen(webapp2.RequestHandler):
         if toSendCitizen is None:
             response_obj["citizen"] = "null"
         else:
-            # TODO : Change the state of the citizen to 1 (locked)
-            # toSendCitizen.state = 1
+            toSendCitizen.state = 1
             toSendCitizen.put()
             citizen = {}
             citizen["state"] = toSendCitizen.state
