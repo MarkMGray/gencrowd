@@ -114,8 +114,8 @@ el("submitButt").onclick = function() {
 
 	var postObj = DISPLAY.citizen.getSaveData();
 	console.log(DISPLAY.citizen);
-	postObj.citizenID = "0";//citizenID.toString();
-	postObj.generationID = "1"; // generationID.toString();
+	postObj.citizenID = citizenID.toString();
+	postObj.generationID = generationID.toString();
 	console.log(postObj["cellData"]);
 	postObj = {"data" :  JSON.stringify(postObj)}
 	console.log("postobj: ");
@@ -124,7 +124,7 @@ el("submitButt").onclick = function() {
 
 
 	$("#overlay").show();
-	$.post("/api/newcitizen", postObj, function (data) {
+	$.post("/api/save", postObj, function (data) {
 		console.log(data);
 		var jsonObj = $.parseJSON(data);
 

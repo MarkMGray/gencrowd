@@ -47,9 +47,17 @@ class SaveCitizen(webapp2.RequestHandler):
         citizen.state = 2
         citizen.evaluation = evaluationObj
         citizen.put()
+        print "Here 1"
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
         self.response.write(json.dumps(response_obj))
+        # Just mutate one citizen
+        # new_cit = Mutation.Mutation.mutateSingleCitizen(citizen)
+        # new_cit.generationID = 2
+        # new_cit.citizenID = 1
+        # new_cit.state = 0
+        # new_cit.put()
+        # print new_cit
         gen_citizens = Citizen.Citizen.get_latest_generation_citizens()
         all_evaluated = True
         for citizen in gen_citizens:
@@ -75,6 +83,9 @@ class FetchCitizen(webapp2.RequestHandler):
         if toSendCitizen is None:
             response_obj["citizen"] = "null"
         else:
+            print "Fetching citizen:"
+            print toSendCitizen.citizenID
+            print toSendCitizen.generationID
             toSendCitizen.state = 1
             toSendCitizen.put()
             citizen = {}
@@ -141,5 +152,20 @@ class SaveNewCitizen(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
+class GenerateACitizen(webapp2.RequestHandler):
+    def get(self):
+        citizen = Mutation.Mutation.createRandomNewCitizen(Mutation.ROWS, Mutation.COLS, Mutation.NUM_OBJ_CLASSES, Mutation.WGT_POOL_SIZE)
+        citizen.state = 0
+        citizen.citizenID = 1
+        citizen.generationID = 0
+        citizen.put()
+        response_obj = {}
+        response_obj["response_code"] = 0
+        response_obj["msg"] = "Citizen generated"
+        response_obj["cID"] = citizen.citizenID
+        response_obj["gID"]  = citizen.generationID
+        self.response.write(json.dumps(response_obj))
+        return
+
 app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen),
-                               ('/api/newcitizen', SaveNewCitizen)], debug=True)
+                               ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen)], debug=True)
