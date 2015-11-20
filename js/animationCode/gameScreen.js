@@ -144,6 +144,9 @@ GameDisplay.prototype.setCitizen = function(citizen, fourPointClasser) {
 	this.cells = this.citizen.display.cells;
 	this.citizen.evaluation.startMs = (new Date()).getTime();
 	this.citizen.fourPointClasser = fourPointClasser;
-
 	this.id = this.citizen.display.id;
+
+	for (var i = 0; i < citizen.display.cells.length; i++) {
+		citizen.display.cells[i].connectToClassPool(citizen.weightPool);
+	}
 }
