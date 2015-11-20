@@ -67,11 +67,12 @@ class SaveCitizen(webapp2.RequestHandler):
         if all_evaluated:
             print "Running the mutation algorithm"
             Mutation.Mutation.generateNextGeneration()
+        else:
+            print "Not running mutation algorithm"
         return
 
 class FetchCitizen(webapp2.RequestHandler):
     def post(self):
-        print "In FetchCitizen"
         genCitizens = Citizen.Citizen.get_latest_generation_citizens()
         toSendCitizen = None
         for citizen in genCitizens:
@@ -83,9 +84,9 @@ class FetchCitizen(webapp2.RequestHandler):
         if toSendCitizen is None:
             response_obj["citizen"] = "null"
         else:
-            print "Fetching citizen:"
-            print toSendCitizen.citizenID
+            print "Fetching citizen"
             print toSendCitizen.generationID
+            print toSendCitizen.citizenID
             toSendCitizen.state = 1
             toSendCitizen.put()
             citizen = {}
@@ -104,7 +105,6 @@ class FetchCitizen(webapp2.RequestHandler):
 
 class SaveNewCitizen(webapp2.RequestHandler):
     def post(self):
-        print "In New Citizen"
         s = self.request.get("data")
         data = json.loads(s)
         response_obj={}
@@ -170,7 +170,7 @@ class GenerateACitizen(webapp2.RequestHandler):
 class GenerateFirstGen(webapp2.RequestHandler):
     def get(self):
         for i in range(0, 10):
-            citizen = Mutation.Mutation.createRandomNewCitizen(Mutation.ROWS, Mutation.COLS, Mutation.NUM_OBJ_CLASSES, Mutation.WGT_POOL_SIZE)
+            citizen = Citizen.Citizen.createRandomNewCitizen(Citizen.ROWS, Citizen.COLS, Citizen.NUM_OBJ_CLASSES, Citizen.WGT_POOL_SIZE)
             citizen.state = 0
             citizen.citizenID = i+1
             citizen.generationID = 1
