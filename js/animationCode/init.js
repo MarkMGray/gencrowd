@@ -1,4 +1,5 @@
 
+$("#overlay").show();
 $.post("/api/fetch", function(data) {
 	var jsonObj = $.parseJSON(data);
 
@@ -62,12 +63,13 @@ $.post("/api/fetch", function(data) {
 		console.log("Citizen: " + citizenID);
 		console.log(DISPLAY);
 
-
+		$("#overlay").hide();
 
 	}
 
 }).fail(function() {
 	toastr.error("Failed to load citizen!");
+	$("#overlay").hide();
 });
 
 //FOURPOINTCLASSER = new FourPointClasser(true, WGT_POOL_SIZE, NUM_OBJ_CLASSES);
