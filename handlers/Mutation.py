@@ -18,22 +18,18 @@ class Mutation:
             evalAvg = evalTotal/float(len(cit.evaluation))
             cit_tuple = (cit, evalAvg)
             cit_list.append(cit_tuple)
-        sorted_cit_list = sorted(cit_list, key=lambda x:x[1], reverse=True)
-        sorted_previous_gen = [x[0] for x in cit_list]
-        print "Unsorted"
-        print previous_gen_citizens
-        print "Sorted"
-        print sorted_previous_gen
+        sorted_cit_list = sorted(cit_list, key=lambda tup:tup[1], reverse=True)
+        sorted_previous_gen = [x[0] for x in sorted_cit_list]
         old_gen_id = previous_gen_citizens[0].generationID
         next_gen_citizens = []
         # Keeping top P citizens
-        for i in range(0, int(len(sorted_previous_gen) * P) - 1):
+        for i in range(0, int(len(sorted_previous_gen) * P)):
             new_citizen = Citizen.Citizen.makeCopyOfCitizen(sorted_previous_gen[i])
             next_gen_citizens.append(new_citizen)
         # Generating Q new guys as mutations of P
         max_p = int(len(sorted_previous_gen) * P) - 1
         p_index = 0
-        for i in range(0, int(len(sorted_previous_gen) * Q) - 1):
+        for i in range(0, int(len(sorted_previous_gen) * Q)):
             cit_to_mutate = sorted_previous_gen[p_index]
             new_citizen = Mutation.mutateSingleCitizen(cit_to_mutate)
             next_gen_citizens.append(new_citizen)
@@ -41,7 +37,7 @@ class Mutation:
             if p_index > max_p:
                 p_index = 0
         # Generate R new guys from scratch
-        for i in range(0, int(len(sorted_previous_gen) * R) - 1):
+        for i in range(0, int(len(sorted_previous_gen) * R)):
             new_citizen = Citizen.Citizen.createRandomNewCitizen(Citizen.ROWS, Citizen.COLS, Citizen.NUM_OBJ_CLASSES, Citizen.WGT_POOL_SIZE)
             next_gen_citizens.append(new_citizen)
         # Saving new generation citizens

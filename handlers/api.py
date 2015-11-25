@@ -198,5 +198,15 @@ class GenerateFirstGen(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
+class RunMutation(webapp2.RequestHandler):
+    def get(self):
+        Mutation.Mutation.generateNextGeneration()
+        response_obj = {}
+        response_obj["response_code"] = 0
+        response_obj["msg"] = "Mutation Completed"
+        self.response.write(json.dumps(response_obj))
+        return
+
 app = webapp2.WSGIApplication([('/api/save', SaveCitizenEvaluation), ('/api/fetch', FetchCitizen), ('/api/genfirstgeneration', GenerateFirstGen),
-                               ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen)], debug=True)
+                               ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen),
+                               ('/api/runmutation', RunMutation)], debug=True)
