@@ -31,3 +31,8 @@ class CompletionCode(ndb.Model):
         if not data:
             return None
         return data
+
+    def redeem_code(self):
+        self.redeemed = True
+        self.put()
+        return
