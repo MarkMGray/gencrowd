@@ -14,6 +14,8 @@ $.post("/api/fetch", function(data) {
 		var numCols = citizen["numcols"];
 		var cellData = citizen["cellData"];
 
+		$("#currentGen").text(generationID);
+
 		// rebuild four point classer
 		var fpClasser = new FourPointClasser(false, fourPointClasserDict["n"],fourPointClasserDict["s"], fourPointClasserDict["e"], fourPointClasserDict["w"], fourPointClasserDict["classes"]);
 		FOURPOINTCLASSER = fpClasser;
@@ -146,7 +148,14 @@ el("submitButt").onclick = function() {
 			toastr.options.positionClass = "toast-top-center";
 			toastr.info("Your completion code is: " + completionCode);
 			toastr.options = tmp;
+			$("#instructions").text("To receive payment copy the completion code below and " +
+				"paste it into our task on Amazon Mechanical Turk!");
+			$("#completionDiv").text("Completion Code: " + completionCode);
+			$("#completionDiv").show();
 		}
+		$("#playDiv").hide();
+		$("#finishButt").hide();
+		$("#submitDiv").hide();
 		$("#overlay").delay(500).hide(0);
 	})
 		.fail(function () {

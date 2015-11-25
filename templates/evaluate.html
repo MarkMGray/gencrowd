@@ -8,8 +8,9 @@
 
 {% block main_content %}
 
-<p>Current Generation: {{ generation }}</p>
-<p>Feel free to click anywhere in the toy to manipulate it and click Finish to fill out the survey.</p>
+<p>Current Generation: <span id="currentGen"></span> </p>
+<p id="instructions">Feel free to click anywhere in the toy to manipulate it and click Finish to fill out the survey.</p>
+<div id="completionDiv" style="display: none"></div>
 <div>
 	<button id="finishButt" class="btn btn-default">Finish</button>
 </div>
