@@ -10,7 +10,20 @@ class Mutation:
     @classmethod
     def generateNextGeneration(cls):
         previous_gen_citizens = Citizen.Citizen.get_latest_generation_citizens()
-        sorted_previous_gen = sorted(previous_gen_citizens, key=lambda x: x.evaluation.evaluationScore, reverse=True)
+        cit_list = []
+        for cit in previous_gen_citizens:
+            evalTotal = 0.0
+            for eval in cit.evaluation:
+                evalTotal += eval.evaluationScore
+            evalAvg = evalTotal/float(len(cit.evaluation))
+            cit_tuple = (cit, evalAvg)
+            cit_list.append(cit_tuple)
+        sorted_cit_list = sorted(cit_list, key=lambda x:x[1], reverse=True)
+        sorted_previous_gen = [x[0] for x in cit_list]
+        print "Unsorted"
+        print previous_gen_citizens
+        print "Sorted"
+        print sorted_previous_gen
         old_gen_id = previous_gen_citizens[0].generationID
         next_gen_citizens = []
         # Keeping top P citizens
@@ -38,6 +51,7 @@ class Mutation:
             citizen.citizenID = new_citizen_id
             citizen.generationID = new_gen_id
             citizen.state = 0
+            citizen.evaluation = []
             citizen.put()
             new_citizen_id += 1
         print "Generated new generation"

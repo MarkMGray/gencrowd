@@ -1,14 +1,15 @@
 import json
 import cgi
 import webapp2
+import random
 from models import Citizen
 from models import CitizenHelper
 from models import Evaluation
 from handlers import Mutation
 
-class SaveCitizen(webapp2.RequestHandler):
+class SaveCitizenEvaluation(webapp2.RequestHandler):
     def post(self):
-        print "In SaveCitizen"
+        print "In SaveCitizenEvaluation"
         s = self.request.get("data")
         data = json.loads(s)
         citizenID = data["citizenID"]
@@ -44,20 +45,14 @@ class SaveCitizen(webapp2.RequestHandler):
         evaluationObj.endTime = evaluationDict["endMs"]
         evaluationObj.evaluationScore = evaluationDict["surveyScore"]
         evaluationObj.clicks = evaluationDict["clicks"]
-        citizen.state = 2
-        citizen.evaluation = evaluationObj
+        citizen.evaluation.append(evaluationObj)
+        if len(citizen.evaluation) >= 4:
+            citizen.state = 2
         citizen.put()
-        print "Here 1"
+        print "Saved Citizen Evaluation"
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
         self.response.write(json.dumps(response_obj))
-        # Just mutate one citizen
-        # new_cit = Mutation.Mutation.mutateSingleCitizen(citizen)
-        # new_cit.generationID = 2
-        # new_cit.citizenID = 1
-        # new_cit.state = 0
-        # new_cit.put()
-        # print new_cit
         gen_citizens = Citizen.Citizen.get_latest_generation_citizens()
         all_evaluated = True
         for citizen in gen_citizens:
@@ -74,6 +69,7 @@ class SaveCitizen(webapp2.RequestHandler):
 class FetchCitizen(webapp2.RequestHandler):
     def post(self):
         genCitizens = Citizen.Citizen.get_latest_generation_citizens()
+        random.shuffle(genCitizens)
         toSendCitizen = None
         for citizen in genCitizens:
             if citizen.state == 0:
@@ -87,7 +83,8 @@ class FetchCitizen(webapp2.RequestHandler):
             print "Fetching citizen"
             print toSendCitizen.generationID
             print toSendCitizen.citizenID
-            toSendCitizen.state = 1
+            print len(toSendCitizen.evaluation)
+            # toSendCitizen.state = 1
             toSendCitizen.put()
             citizen = {}
             citizen["state"] = toSendCitizen.state
@@ -156,6 +153,7 @@ class GenerateACitizen(webapp2.RequestHandler):
     def get(self):
         citizen = Mutation.Mutation.createRandomNewCitizen(Mutation.ROWS, Mutation.COLS, Mutation.NUM_OBJ_CLASSES, Mutation.WGT_POOL_SIZE)
         citizen.state = 0
+        citizen.evaluation = []
         citizen.citizenID = 1
         citizen.generationID = 0
         citizen.put()
@@ -172,6 +170,7 @@ class GenerateFirstGen(webapp2.RequestHandler):
         for i in range(0, 10):
             citizen = Citizen.Citizen.createRandomNewCitizen(Citizen.ROWS, Citizen.COLS, Citizen.NUM_OBJ_CLASSES, Citizen.WGT_POOL_SIZE)
             citizen.state = 0
+            citizen.evaluation = []
             citizen.citizenID = i+1
             citizen.generationID = 1
             citizen.put()
@@ -183,5 +182,5 @@ class GenerateFirstGen(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
-app = webapp2.WSGIApplication([('/api/save', SaveCitizen), ('/api/fetch', FetchCitizen), ('/api/genfirstgeneration', GenerateFirstGen),
+app = webapp2.WSGIApplication([('/api/save', SaveCitizenEvaluation), ('/api/fetch', FetchCitizen), ('/api/genfirstgeneration', GenerateFirstGen),
                                ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen)], debug=True)
