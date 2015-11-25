@@ -183,7 +183,7 @@ class GenerateACitizen(webapp2.RequestHandler):
 
 class GenerateFirstGen(webapp2.RequestHandler):
     def get(self):
-        for i in range(0, 10):
+        for i in range(0, 20):
             citizen = Citizen.Citizen.createRandomNewCitizen(Citizen.ROWS, Citizen.COLS, Citizen.NUM_OBJ_CLASSES, Citizen.WGT_POOL_SIZE)
             citizen.state = 0
             citizen.evaluation = []
