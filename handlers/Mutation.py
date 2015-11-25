@@ -15,7 +15,9 @@ class Mutation:
             evalTotal = 0.0
             for eval in cit.evaluation:
                 evalTotal += eval.evaluationScore
-            evalAvg = evalTotal/float(len(cit.evaluation))
+            evalAvg = 0
+            if len(cit.evaluation) > 0:
+                evalAvg = evalTotal/float(len(cit.evaluation))
             cit_tuple = (cit, evalAvg)
             cit_list.append(cit_tuple)
         sorted_cit_list = sorted(cit_list, key=lambda tup:tup[1], reverse=True)
