@@ -28,8 +28,24 @@ window.GameDisplay = function(parentElement) {
 			console.log(event)
 			var ww = display.getColW();
 			var hh = display.getRowH();
-			var x = Math.max(0, event.layerX - ww / 2) / (ww + 0);
-			var y = Math.max(0, event.layerY - hh / 2) / (hh + 0);
+			var parentHeight = display.parent.clientHeight-26;
+			var parentWidth = display.parent.clientWidth-34;
+			console.log("width: " + parentWidth + " height: " + parentHeight);
+
+			var cellHeight = parentHeight / display.numrows;
+			var cellWidth = parentWidth / display.numcols;
+
+			console.log("cellH: " + cellHeight + " cellW: " + cellWidth);
+
+			console.log("layerX: " + (event.layerX) + " layerY: " + (event.layerY));
+
+			var x = (event.layerX-17) / cellWidth;
+			var y = (event.layerY-13) / cellHeight;
+
+			console.log("x: " + x + " y: " + y);
+
+			//var x = Math.max(0, event.layerX - ww / 2) / (ww + 0);
+			//var y = Math.max(0, event.layerY - hh / 2) / (hh + 0);
 			var cell = display.getCell(Math.floor(x), Math.floor(y), 0);
 			cell.beClicked(display.ctx, ww, hh);
 			console.log(x + "	" + y)
