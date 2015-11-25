@@ -91,6 +91,13 @@ $.post("/api/fetch", function(data) {
 //console.log(DISPLAY)
 //DISPLAY.redraw()
 
+function finishCode() {
+    var result = "";
+    var pop = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    for (var i = 0; i < 8; i++) result += pop.charAt(Math.floor(Math.random() * pop.length));
+    return result;
+}
+
 el("finishButt").onclick = function() {
 	$("#submitDiv").slideDown(500);
 	$("#finishButt").slideUp();
@@ -116,6 +123,8 @@ el("submitButt").onclick = function() {
 	console.log(DISPLAY.citizen);
 	postObj.citizenID = citizenID.toString();
 	postObj.generationID = generationID.toString();
+	var completionCode = finishCode();
+	postObj.completionCode = completionCode;
 	console.log(postObj["cellData"]);
 	postObj = {"data" :  JSON.stringify(postObj)}
 	console.log("postobj: ");
@@ -131,7 +140,12 @@ el("submitButt").onclick = function() {
 		if(jsonObj["response_code"] != 0) {
 			toastr.error("Error: " + jsonObj["error_msg"]);
 		} else {
+			var tmp = toastr.options;
 			toastr.success("Successfully saved response!");
+			toastr.options.timeOut = 750000;
+			toastr.options.positionClass = "toast-top-center";
+			toastr.info("Your completion code is: " + completionCode);
+			toastr.options = tmp;
 		}
 		$("#overlay").delay(500).hide(0);
 	})
