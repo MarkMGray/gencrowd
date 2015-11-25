@@ -8,6 +8,10 @@
     height: 80%;
 }
 
+#completionDiv {
+    font-weight:500;
+}
+
 #push {
     height: 60px;
 }

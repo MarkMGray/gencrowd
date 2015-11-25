@@ -1,4 +1,5 @@
 
+$("#overlay").show();
 $.post("/api/fetch", function(data) {
 	var jsonObj = $.parseJSON(data);
 
@@ -13,6 +14,8 @@ $.post("/api/fetch", function(data) {
 		var numRows = citizen["numrows"];
 		var numCols = citizen["numcols"];
 		var cellData = citizen["cellData"];
+
+		$("#currentGen").text(generationID);
 
 		// rebuild four point classer
 		var fpClasser = new FourPointClasser(false, fourPointClasserDict["n"],fourPointClasserDict["s"], fourPointClasserDict["e"], fourPointClasserDict["w"], fourPointClasserDict["classes"]);
@@ -60,12 +63,13 @@ $.post("/api/fetch", function(data) {
 		console.log("Citizen: " + citizenID);
 		console.log(DISPLAY);
 
-
+		$("#overlay").hide();
 
 	}
 
 }).fail(function() {
 	toastr.error("Failed to load citizen!");
+	$("#overlay").hide();
 });
 
 //FOURPOINTCLASSER = new FourPointClasser(true, WGT_POOL_SIZE, NUM_OBJ_CLASSES);
@@ -146,7 +150,14 @@ el("submitButt").onclick = function() {
 			toastr.options.positionClass = "toast-top-center";
 			toastr.info("Your completion code is: " + completionCode);
 			toastr.options = tmp;
+			$("#instructions").text("To receive payment copy the completion code below and " +
+				"paste it into our task on Amazon Mechanical Turk!");
+			$("#completionDiv").text("Completion Code: " + completionCode);
+			$("#completionDiv").show();
 		}
+		$("#playDiv").hide();
+		$("#finishButt").hide();
+		$("#submitDiv").hide();
 		$("#overlay").delay(500).hide(0);
 	})
 		.fail(function () {
