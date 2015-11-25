@@ -5,6 +5,7 @@ import random
 from models import Citizen
 from models import CitizenHelper
 from models import Evaluation
+from models import CompletionCode
 from handlers import Mutation
 
 class SaveCitizenEvaluation(webapp2.RequestHandler):
@@ -12,6 +13,7 @@ class SaveCitizenEvaluation(webapp2.RequestHandler):
         print "In SaveCitizenEvaluation"
         s = self.request.get("data")
         data = json.loads(s)
+        completionCode = data["completionCode"]
         citizenID = data["citizenID"]
         generationID = data["generationID"]
         evaluationDict = data["evaluation"]
@@ -39,6 +41,11 @@ class SaveCitizenEvaluation(webapp2.RequestHandler):
             response_obj["error_msg"] = "No evaluation given"
             self.response.write(json.dumps(response_obj))
             return
+        if not completionCode or completionCode == "":
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "No completion code given"
+            self.response.write(json.dumps(response_obj))
+            return
         evaluationObj = Evaluation.Evaluation()
         evaluationObj.startTime = evaluationDict["startMs"]
         evaluationObj.startTime = evaluationDict["startMs"]
@@ -49,6 +56,15 @@ class SaveCitizenEvaluation(webapp2.RequestHandler):
         if len(citizen.evaluation) >= 4:
             citizen.state = 2
         citizen.put()
+        completionCode = str(completionCode)
+        compCodeObj = CompletionCode.CompletionCode()
+        compCodeObj.code = completionCode
+        compCodeObj.redeemed = False
+        compCodeObj.put()
+        print citizen.generationID
+        print citizen.citizenID
+        print len(citizen.evaluation)
+        print citizen.state
         print "Saved Citizen Evaluation"
         response_obj["response_code"] = 0
         response_obj["message"] = "Saved Citizen Successfully"
