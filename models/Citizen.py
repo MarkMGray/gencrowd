@@ -37,6 +37,12 @@ class Citizen(ndb.Model):
             cells.append(cell.toDict())
         return cells
 
+    def get_evaluations_json(self):
+        eval_list = []
+        for eval in self.evaluation:
+            eval_list.append(eval.to_json())
+        return eval_list
+
     @classmethod
     def get_all_citizens(cls):
         data = cls.query().fetch()

@@ -207,6 +207,45 @@ class RunMutation(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
+class EvaluationData(webapp2.RequestHandler):
+    def get(self):
+        generationID = self.request.get("generation")
+        response_obj = {}
+        if not generationID or len(generationID) == 0:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Generation ID missing"
+            self.response.write(json.dumps(response_obj))
+            return
+        generationID = int(generationID)
+        gen_citizens = Citizen.Citizen.get_all_citizens_by_generation(generationID)
+        cit_list = []
+        for cit in gen_citizens:
+            evalTotal = 0.0
+            for eval in cit.evaluation:
+                evalTotal += eval.evaluationScore
+            evalAvg = 0
+            if len(cit.evaluation) > 0:
+                evalAvg = evalTotal/float(len(cit.evaluation))
+            cit_tuple = (cit, evalAvg, evalTotal)
+            cit_list.append(cit_tuple)
+        sorted_gen_cit = sorted(cit_list, key=lambda tup:tup[1], reverse=True)
+        final_cit_list = []
+        for cit_tup in sorted_gen_cit:
+            citizen = {}
+            citizen["citID"] = cit_tup[0].citizenID
+            citizen["evaluations"] = cit_tup[0].get_evaluations_json()
+            citizen["avgscore"] = cit_tup[1]
+            citizen["totalscore"] = cit_tup[2]
+            final_cit_list.append(citizen)
+        response_obj["response_code"] = 0
+        response_obj["msg"] = "success"
+        response_obj["generation"] = generationID
+        response_obj["citizens"] = final_cit_list
+        self.response.write(json.dumps(response_obj))
+        return
+
+
+
 app = webapp2.WSGIApplication([('/api/save', SaveCitizenEvaluation), ('/api/fetch', FetchCitizen), ('/api/genfirstgeneration', GenerateFirstGen),
                                ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen),
-                               ('/api/runmutation', RunMutation)], debug=True)
+                               ('/api/runmutation', RunMutation), ('/api/evaluationdata', EvaluationData)], debug=True)
