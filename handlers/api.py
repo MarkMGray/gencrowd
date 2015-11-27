@@ -97,9 +97,9 @@ class FetchCitizen(webapp2.RequestHandler):
             response_obj["citizen"] = "null"
         else:
             print "Fetching citizen"
-            print toSendCitizen.generationID
-            print toSendCitizen.citizenID
-            print len(toSendCitizen.evaluation)
+            # print toSendCitizen.generationID
+            # print toSendCitizen.citizenID
+            # print len(toSendCitizen.evaluation)
             # toSendCitizen.state = 1
             toSendCitizen.put()
             citizen = {}
@@ -244,8 +244,47 @@ class EvaluationData(webapp2.RequestHandler):
         self.response.write(json.dumps(response_obj))
         return
 
-
+class FetchSpecificCitizen(webapp2.RequestHandler):
+    def post(self):
+        generationID = self.request.get("generationID")
+        citizenID = self.request.get("citizenID")
+        response_obj = {}
+        if not generationID or len(generationID) == 0:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Generation ID missing"
+            self.response.write(json.dumps(response_obj))
+            return
+        if not citizenID or len(citizenID) == 0:
+            response_obj["response_code"] = 1
+            response_obj["error_msg"] = "Citizen ID missing"
+            self.response.write(json.dumps(response_obj))
+            return
+        generationID = int(generationID)
+        citizenID = int(citizenID)
+        toSendCitizen = Citizen.Citizen.get_citizen(generationID, citizenID)
+        response_obj = {}
+        response_obj["response_code"] = 0
+        if toSendCitizen is None:
+            response_obj["citizen"] = "null"
+        else:
+            print "Fetching specific citizen"
+            # toSendCitizen.state = 1
+            toSendCitizen.put()
+            citizen = {}
+            citizen["state"] = toSendCitizen.state
+            citizen["citizenID"] = toSendCitizen.citizenID
+            citizen["generationID"] = toSendCitizen.generationID
+            citizen["numrows"] = toSendCitizen.numRows
+            citizen["numcols"] = toSendCitizen.numCols
+            citizen["evaluation"] = None
+            citizen["fourPointClasser"] = toSendCitizen.fourPointClasses.toDict()
+            citizen["classPool"] = toSendCitizen.classPoolList()
+            citizen["cellData"] = toSendCitizen.cellDataList()
+            response_obj["citizen"] = citizen
+        self.response.write(json.dumps(response_obj))
+        return
 
 app = webapp2.WSGIApplication([('/api/save', SaveCitizenEvaluation), ('/api/fetch', FetchCitizen), ('/api/genfirstgeneration', GenerateFirstGen),
                                ('/api/newcitizen', SaveNewCitizen), ('/api/generatecitizen', GenerateACitizen),
-                               ('/api/runmutation', RunMutation), ('/api/evaluationdata', EvaluationData)], debug=True)
+                               ('/api/runmutation', RunMutation), ('/api/evaluationdata', EvaluationData),
+                               ('/api/fetchspecific', FetchSpecificCitizen)], debug=True)
