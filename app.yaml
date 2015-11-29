@@ -30,5 +30,8 @@ handlers:
 - url: /api.*
   script: handlers.api.app
 
+- url: /view.*
+  script: handlers.view_citizen.app
+
 - url: /.*
   script: handlers.main.app
