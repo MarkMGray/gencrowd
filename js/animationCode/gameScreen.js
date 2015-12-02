@@ -143,8 +143,8 @@ GameDisplay.prototype.redraw = function() {
 	q.height = this.parent.offsetHeight * this.pixelMult;
 	if (!this.setSize) {
 
-		q.style.width = this.parent.offsetWidth + 'px';
-		q.style.height =  '20em';
+		q.style.width = this.parent.offsetWidth /2 + 'px';
+		q.style.height =  '10em';
 		this.setSize = true;
 	}
 

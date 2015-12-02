@@ -12,9 +12,9 @@ var COLORS = [
 	'rgba(128,0,128,1)',
 	'rgba(128,128,0,1)'
 ];
-COLORS.sort(function(a, b) {
-	return Math.random() > 0.5 ? 1 : -1;
-})
+//COLORS.sort(function(a, b) {
+//	return Math.random() > 0.5 ? 1 : -1;
+//})
 
 var RED = 'rgba(255,0,0,1)';
 
